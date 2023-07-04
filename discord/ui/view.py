@@ -219,7 +219,7 @@ class View:
         children = sorted(self.children, key=key)
         components: list[dict[str, Any]] = []
         for _, group in groupby(children, key=key):
-            children = [item.to_component_dict() for item in group]
+            children = [item.to_component_dict() for item in group if not item.hidden]
             if not children:
                 continue
 
@@ -294,6 +294,28 @@ class View:
 
         item._view = self
         self.children.append(item)
+
+    def insert_item(self, item: Item, position: int) -> None:
+        """Inserts an item to the view in specified position.
+
+        Parameters
+        ----------
+        item: :class:`Item`
+            The item to insert to the view.
+        position: :class:`int`
+            The position in children list, where to insert the item.
+
+        Raises
+        ------
+        TypeError
+            An :class:`Item` was not passed.
+        ValueError
+            Maximum number of children has been exceeded (25)
+            or the row the item is trying to be added to is full.
+        """
+
+        self.add_item(item)
+        self.children.insert(position, self.children.pop(-1))
 
     def remove_item(self, item: Item) -> None:
         """Removes an item from the view.
@@ -409,6 +431,19 @@ class View:
             error.__class__, error, error.__traceback__, file=sys.stderr
         )
 
+    async def on_success(self, return_value: Any, interaction: Interaction) -> None:
+        """|coro|
+
+        A callback that is called after item's callback
+
+        Parameters
+        ----------
+        return_value: :class:`Any`
+            The return of the callback.
+        interaction: :class:`~discord.Interaction`
+            The interaction that led to the failure.
+        """
+
     async def _scheduled_task(self, item: Item, interaction: Interaction):
         try:
             if self.timeout:
@@ -418,7 +453,8 @@ class View:
             if not allow:
                 return await self.on_check_failure(interaction)
 
-            await item.callback(interaction)
+            return_value = await item.callback(interaction)
+            await self.on_success(return_value, interaction)
         except Exception as e:
             return await self.on_error(e, item, interaction)
 

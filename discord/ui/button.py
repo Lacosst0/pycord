@@ -73,6 +73,8 @@ class Button(Item[V]):
         like to control the relative positioning of the row then passing an index is advised.
         For example, row=1 will show up before row=2. Defaults to ``None``, which is automatic
         ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+    hidden: Optional[:class:`bool`]
+        Whether to display the button when sending a message or not.
     """
 
     __item_repr_attributes__: tuple[str, ...] = (
@@ -82,6 +84,7 @@ class Button(Item[V]):
         "label",
         "emoji",
         "row",
+        "hidden",
     )
 
     def __init__(
@@ -94,6 +97,7 @@ class Button(Item[V]):
         url: str | None = None,
         emoji: str | Emoji | PartialEmoji | None = None,
         row: int | None = None,
+        hidden: bool | None = None,
     ):
         super().__init__()
         if label and len(str(label)) > 80:
@@ -136,6 +140,7 @@ class Button(Item[V]):
             emoji=emoji,
         )
         self.row = row
+        self.hidden = hidden
 
     @property
     def style(self) -> ButtonStyle:
@@ -222,6 +227,7 @@ class Button(Item[V]):
             url=button.url,
             emoji=button.emoji,
             row=None,
+            hidden=None,
         )
 
     @property
@@ -251,6 +257,7 @@ def button(
     style: ButtonStyle = ButtonStyle.secondary,
     emoji: str | Emoji | PartialEmoji | None = None,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A decorator that attaches a button to a component.
 
@@ -286,6 +293,8 @@ def button(
         like to control the relative positioning of the row then passing an index is advised.
         For example, row=1 will show up before row=2. Defaults to ``None``, which is automatic
         ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+    hidden: Optional[:class:`bool`]
+        Whether to display the button when sending a message or not. Defaults to ``False``.
     """
 
     def decorator(func: ItemCallbackType) -> ItemCallbackType:
@@ -301,6 +310,7 @@ def button(
             "label": label,
             "emoji": emoji,
             "row": row,
+            "hidden": hidden
         }
         return func
 

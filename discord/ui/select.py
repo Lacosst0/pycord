@@ -110,6 +110,8 @@ class Select(Item[V]):
         like to control the relative positioning of the row then passing an index is advised.
         For example, row=1 will show up before row=2. Defaults to ``None``, which is automatic
         ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+    hidden: Optional[:class:`bool`]
+        Whether to display the button when sending a message or not.
     """
 
     __item_repr_attributes__: tuple[str, ...] = (
@@ -120,6 +122,7 @@ class Select(Item[V]):
         "options",
         "channel_types",
         "disabled",
+        "hidden",
     )
 
     def __init__(
@@ -134,6 +137,7 @@ class Select(Item[V]):
         channel_types: list[ChannelType] = None,
         disabled: bool = False,
         row: int | None = None,
+        hidden: bool | None = None
     ) -> None:
         if options and select_type is not ComponentType.string_select:
             raise InvalidArgument("options parameter is only valid for string selects")
@@ -168,6 +172,7 @@ class Select(Item[V]):
             channel_types=channel_types or [],
         )
         self.row = row
+        self.hidden = hidden
 
     @property
     def custom_id(self) -> str:
@@ -427,6 +432,7 @@ class Select(Item[V]):
             channel_types=component.channel_types,
             disabled=component.disabled,
             row=None,
+            hidden=None,
         )
 
     @property
@@ -457,6 +463,7 @@ def select(
     channel_types: list[ChannelType] = MISSING,
     disabled: bool = False,
     row: int | None = None,
+    hidden: bool | None = None,
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A decorator that attaches a select menu to a component.
 
@@ -504,6 +511,8 @@ def select(
         Defaults to all channel types.
     disabled: :class:`bool`
         Whether the select is disabled or not. Defaults to ``False``.
+    hidden: Optional[:class:`bool`]
+        Whether to display the button when sending a message or not. Defaults to ``False``
     """
     if select_type not in _select_types:
         raise ValueError(
@@ -531,6 +540,7 @@ def select(
             "min_values": min_values,
             "max_values": max_values,
             "disabled": disabled,
+            "hidden": hidden
         }
         if options:
             model_kwargs["options"] = options
@@ -554,6 +564,7 @@ def string_select(
     options: list[SelectOption] = MISSING,
     disabled: bool = False,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.string_select`.
 
@@ -568,6 +579,7 @@ def string_select(
         options=options,
         disabled=disabled,
         row=row,
+        hidden=hidden
     )
 
 
@@ -579,6 +591,7 @@ def user_select(
     max_values: int = 1,
     disabled: bool = False,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.user_select`.
 
@@ -592,6 +605,7 @@ def user_select(
         max_values=max_values,
         disabled=disabled,
         row=row,
+        hidden=hidden,
     )
 
 
@@ -603,6 +617,7 @@ def role_select(
     max_values: int = 1,
     disabled: bool = False,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.role_select`.
 
@@ -616,6 +631,7 @@ def role_select(
         max_values=max_values,
         disabled=disabled,
         row=row,
+        hidden=hidden,
     )
 
 
@@ -627,6 +643,7 @@ def mentionable_select(
     max_values: int = 1,
     disabled: bool = False,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.mentionable_select`.
 
@@ -640,6 +657,7 @@ def mentionable_select(
         max_values=max_values,
         disabled=disabled,
         row=row,
+        hidden=hidden,
     )
 
 
@@ -652,6 +670,7 @@ def channel_select(
     disabled: bool = False,
     channel_types: list[ChannelType] = MISSING,
     row: int | None = None,
+    hidden: bool | None = None
 ) -> Callable[[ItemCallbackType], ItemCallbackType]:
     """A shortcut for :meth:`discord.ui.select` with select type :attr:`discord.ComponentType.channel_select`.
 
@@ -666,4 +685,5 @@ def channel_select(
         disabled=disabled,
         channel_types=channel_types,
         row=row,
+        hidden=hidden,
     )

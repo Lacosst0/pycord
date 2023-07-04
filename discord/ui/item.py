@@ -52,12 +52,13 @@ class Item(Generic[V]):
     .. versionadded:: 2.0
     """
 
-    __item_repr_attributes__: tuple[str, ...] = ("row",)
+    __item_repr_attributes__: tuple[str, ...] = ("row", "hidden")
 
     def __init__(self):
         self._view: V | None = None
         self._row: int | None = None
         self._rendered_row: int | None = None
+        self._hidden: bool | None = None
         # This works mostly well but there is a gotcha with
         # the interaction with from_component, since that technically provides
         # a custom_id most dispatchable items would get this set to True even though
@@ -107,6 +108,14 @@ class Item(Generic[V]):
             self._row = value
         else:
             raise ValueError("row cannot be negative or greater than or equal to 5")
+
+    @property
+    def hidden(self) -> bool | None:
+        return self._hidden
+
+    @hidden.setter
+    def hidden(self, value: bool | None):
+        self._hidden = bool(value)
 
     @property
     def width(self) -> int:
