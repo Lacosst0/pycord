@@ -431,14 +431,14 @@ class View:
             error.__class__, error, error.__traceback__, file=sys.stderr
         )
 
-    async def on_success(self, return_value: Any, interaction: Interaction) -> None:
+    async def on_success(self, callback_return: Any, interaction: Interaction) -> None:
         """|coro|
 
-        A callback that is called after item's callback
+        A callback that is called after item's callback.
 
         Parameters
         ----------
-        return_value: :class:`Any`
+        callback_return: :class:`Any`
             The return of the callback.
         interaction: :class:`~discord.Interaction`
             The interaction that led to the failure.
