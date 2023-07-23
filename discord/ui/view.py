@@ -586,6 +586,32 @@ class View:
             if exclusions is None or child not in exclusions:
                 child.disabled = False
 
+    def hide_all_items(self, *, exclusions: list[Item] | None = None) -> None:
+        """
+        Hides all items in the view.
+
+        Parameters
+        ----------
+        exclusions: Optional[List[:class:`Item`]]
+            A list of items in `self.children` to not disable from the view.
+        """
+        for child in self.children:
+            if exclusions is None or child not in exclusions:
+                child.hidden = True
+
+    def show_all_items(self, *, exclusions: list[Item] | None = None) -> None:
+        """
+        Shows all items in the view.
+
+        Parameters
+        ----------
+        exclusions: Optional[List[:class:`Item`]]
+            A list of items in `self.children` to not enable from the view.
+        """
+        for child in self.children:
+            if exclusions is None or child not in exclusions:
+                child.hidden = False
+
     @property
     def message(self):
         return self._message
