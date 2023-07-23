@@ -509,7 +509,13 @@ class View:
                 older.refresh_component(component)
                 children.append(older)
 
-        self.children = children
+        children_ids = [(i.type.value, i.custom_id) for i in children]
+        for index, i in enumerate(self.children):
+            try:
+                item_index = children_ids.index((i.type.value, i.custom_id))
+                self.children[index] = children[item_index]
+            except ValueError:
+                pass
 
     def stop(self) -> None:
         """Stops listening to interaction events from this view.
