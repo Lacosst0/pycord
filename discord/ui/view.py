@@ -48,7 +48,7 @@ __all__ = ("View",)
 if TYPE_CHECKING:
     from ..interactions import Interaction, InteractionMessage
     from ..message import Message
-    from ..state import ConnectionState
+    from ..state import ConnectionState, _log
     from ..types.components import Component as ComponentPayload
 
 
@@ -494,28 +494,21 @@ class View:
         old_state: dict[tuple[int, str], Item] = {
             (item.type.value, item.custom_id): item for item in self.children if item.is_dispatchable()  # type: ignore
         }
-        children: list[Item] = [
-            item for item in self.children if not item.is_dispatchable()
-        ]
+        # Fix ~~stolen~~ borrowed from discord.py (discord.py/commit/e198a0e7e6df58bdfcba1cdbf31345ed67c5f10e)
+        error_components = []
         for component in _walk_all_components(components):
+            custom_id = getattr(component, 'custom_id', None)
+            if custom_id is None:
+                continue
+
             try:
-                older = old_state[(component.type.value, component.custom_id)]  # type: ignore
-            except (KeyError, AttributeError):
-                item = _component_to_item(component)
-                if not item.is_dispatchable():
-                    continue
-                children.append(item)
+                older = old_state[custom_id]
+            except KeyError:
+                error_components.append(custom_id)
             else:
                 older.refresh_component(component)
-                children.append(older)
-
-        children_ids = [(i.type.value, i.custom_id) for i in children]
-        for index, i in enumerate(self.children):
-            try:
-                item_index = children_ids.index((i.type.value, i.custom_id))
-                self.children[index] = children[item_index]
-            except ValueError:
-                pass
+        if error_components:
+            raise ValueError(f'View interaction referenced unknown item(s) custom_id: {error_components}. Discarding')
 
     def stop(self) -> None:
         """Stops listening to interaction events from this view.
