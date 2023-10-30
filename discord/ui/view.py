@@ -165,7 +165,7 @@ class View:
         self,
         *items: Item,
         timeout: float | None = 180.0,
-        disable_on_timeout: bool = False,
+        disable_on_timeout: bool = True,
     ):
         self.timeout = timeout
         self.disable_on_timeout = disable_on_timeout
