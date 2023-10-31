@@ -389,6 +389,16 @@ class View:
         A callback that is called when a view's timeout elapses without being explicitly stopped.
         """
         if self.disable_on_timeout:
+            disabled_amount = 0
+            for i in self.children:
+                try:
+                    if i.disabled:
+                        disabled_amount += 1
+                except AttributeError:
+                    continue
+            if disabled_amount == len(self.children):
+                return
+
             self.disable_all_items()
             message = self._message or self.parent
             if message:
