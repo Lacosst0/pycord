@@ -506,7 +506,7 @@ class View:
                 _log.debug('View interaction referenced an unknown item custom_id %s. Discarding', custom_id)
                 continue
             else:
-                older._refresh_component(component)
+                older.refresh_component(component)
 
     def stop(self) -> None:
         """Stops listening to interaction events from this view.
