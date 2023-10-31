@@ -98,9 +98,6 @@ Messages
     .. automethod:: users
         :async-for:
 
-.. autoclass:: ReactionCountDetails()
-    :members:
-
 Guild
 -----
 
