@@ -34,7 +34,6 @@ from functools import partial
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Iterator, Sequence
 
-from .. import NotFound
 from ..components import ActionRow as ActionRowComponent
 from ..components import Button as ButtonComponent
 from ..components import Component
@@ -403,6 +402,7 @@ class View:
             self.disable_all_items()
             message = self._message or self.parent
             if message:
+                from discord import NotFound
                 try:
                     m = await message.edit(view=self)
                     if m:
