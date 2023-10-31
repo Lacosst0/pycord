@@ -491,11 +491,10 @@ class View:
 
     def refresh(self, components: list[Component]):
         # This is pretty hacky at the moment
-        old_state: dict[tuple[int, str], Item] = {
-            (item.type.value, item.custom_id): item for item in self.children if item.is_dispatchable()  # type: ignore
+        old_state: dict[str, Item] = {
+            item.custom_id: item for item in self.children if item.is_dispatchable()  # type: ignore
         }
         # Fix ~~stolen~~ borrowed from discord.py (discord.py/commit/e198a0e7e6df58bdfcba1cdbf31345ed67c5f10e)
-        error_components = []
         for component in _walk_all_components(components):
             custom_id = getattr(component, 'custom_id', None)
             if custom_id is None:
@@ -504,11 +503,10 @@ class View:
             try:
                 older = old_state[custom_id]
             except KeyError:
-                error_components.append(custom_id)
+                _log.debug('View interaction referenced an unknown item custom_id %s. Discarding', custom_id)
+                continue
             else:
-                older.refresh_component(component)
-        if error_components:
-            raise ValueError(f'View interaction referenced unknown item(s) custom_id: {error_components}. Discarding')
+                older._refresh_component(component)
 
     def stop(self) -> None:
         """Stops listening to interaction events from this view.
