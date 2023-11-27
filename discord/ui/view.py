@@ -48,7 +48,7 @@ __all__ = ("View",)
 if TYPE_CHECKING:
     from ..interactions import Interaction, InteractionMessage
     from ..message import Message
-    from ..state import ConnectionState, _log
+    from ..state import ConnectionState
     from ..types.components import Component as ComponentPayload
 
 
@@ -517,7 +517,6 @@ class View:
             try:
                 older = old_state[custom_id]
             except KeyError:
-                _log.debug('View interaction referenced an unknown item custom_id %s. Discarding', custom_id)
                 continue
             else:
                 older.refresh_component(component)
